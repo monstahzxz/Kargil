@@ -21,6 +21,7 @@ def model(X):
 	w5 = tf.get_variable("w5",[fc_size5,fc_size6],initializer = tf.contrib.layers.xavier_initializer())
 	b5 = tf.get_variable("b5", [fc_size6], initializer = tf.zeros_initializer())
 
+	x_norm = tf.layers.batch_normalization(x, training=False)
 	conv1 = tf.layers.conv2d(x,filters=conv1_filters,kernel_size=conv1_ksize,activation=tf.nn.relu,padding=conv1_padding,strides=conv1_strides,name='conv1')
 	#print('conv1 shape = ' + str(conv1.shape))
 	conv2 = tf.layers.conv2d(conv1,filters=conv2_filters,kernel_size=conv2_ksize,activation=tf.nn.relu,padding=conv2_padding,strides=conv2_strides,name='conv2')

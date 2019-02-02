@@ -20,9 +20,17 @@ def model(X, Y):
 	b4 = tf.get_variable("b4", [fc_size5], initializer = tf.zeros_initializer())
 	w5 = tf.get_variable("w5",[fc_size5,fc_size6],initializer = tf.contrib.layers.xavier_initializer())
 	b5 = tf.get_variable("b5", [fc_size6], initializer = tf.zeros_initializer())
+	w6 = tf.get_variable("w6",[fc_size6,fc_size7],initializer = tf.contrib.layers.xavier_initializer())
+	b6 = tf.get_variable("b6", [fc_size7], initializer = tf.zeros_initializer())
+	w7 = tf.get_variable("w7",[fc_size7,fc_size8],initializer = tf.contrib.layers.xavier_initializer())
+	b7 = tf.get_variable("b7", [fc_size8], initializer = tf.zeros_initializer())
+	w8 = tf.get_variable("w8",[fc_size8,fc_size9],initializer = tf.contrib.layers.xavier_initializer())
+	b8 = tf.get_variable("b8", [fc_size9], initializer = tf.zeros_initializer())
+	w9 = tf.get_variable("w9",[fc_size9,fc_size10],initializer = tf.contrib.layers.xavier_initializer())
+	b9 = tf.get_variable("b9", [fc_size10], initializer = tf.zeros_initializer())
 
 	x_norm = tf.layers.batch_normalization(x, training=True)
-	conv1 = tf.layers.conv2d(x,filters=conv1_filters,kernel_size=conv1_ksize,activation=tf.nn.relu,padding=conv1_padding,strides=conv1_strides,name='conv1')
+	conv1 = tf.layers.conv2d(x_norm,filters=conv1_filters,kernel_size=conv1_ksize,activation=tf.nn.relu,padding=conv1_padding,strides=conv1_strides,name='conv1')
 	#print('conv1 shape = ' + str(conv1.shape))
 	conv2 = tf.layers.conv2d(conv1,filters=conv2_filters,kernel_size=conv2_ksize,activation=tf.nn.relu,padding=conv2_padding,strides=conv2_strides,name='conv2')
 	#print('conv2 shape = ' + str(conv2.shape))
@@ -40,10 +48,18 @@ def model(X, Y):
 	z4 = tf.add(tf.matmul(a3,w4),b4)
 	a4 = tf.nn.relu(z4)
 	z5 = tf.add(tf.matmul(a4,w5),b5)
+	a5 = tf.nn.relu(z5)
+	z6 = tf.add(tf.matmul(a5,w6),b6)
+	a6 = tf.nn.relu(z6)
+	z7 = tf.add(tf.matmul(a6,w7),b7)
+	a7 = tf.nn.relu(z7)
+	z8 = tf.add(tf.matmul(a7,w8),b8)
+	a8 = tf.nn.relu(z8)
+	z9 = tf.add(tf.matmul(a8,w9),b9)
 
 	#y_hat_softmax = tf.nn.softmax(z4)
 	#cost = tf.reduce_mean(-tf.reduce_sum(y * tf.log(y_hat_softmax), [1]))
-	cost = tf.math.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z5,labels=y,name='loss'))
+	cost = tf.math.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z9,labels=y,name='loss'))
 	optimiser = tf.train.AdamOptimizer().minimize(cost)
 	init = tf.global_variables_initializer()
 	sess = tf.Session()
@@ -52,8 +68,8 @@ def model(X, Y):
 	sess.run(init)
 
 	for epoch in range(epochs):
-		e_z5, _, e_cost = sess.run([z5,optimiser,cost],feed_dict = {x:X,y:Y})
-		print(e_z5)
+		e_z9, _, e_cost = sess.run([z9,optimiser,cost],feed_dict = {x:X,y:Y})
+		print(e_z9)
 		print(Y)
 		print('Cost after epoch ' + str(epoch) + ' = ' + str(e_cost))
 
@@ -85,7 +101,7 @@ def getData(dataset_path):
 
 if __name__ == '__main__':
 	dims = 200
-	epochs = 30
+	epochs = 40
 	dataset_path = 'new_images/'
 	embed_dims = 128
 	output_classes = 5
@@ -117,12 +133,16 @@ if __name__ == '__main__':
 	max_pool2_padding = 'valid'
 
 	fc_size1 = max_pool2_shape * max_pool2_shape * conv2_filters
-	fc_size2 = embed_dims * 8
-	fc_size3 = embed_dims * 4
-	fc_size4 = embed_dims * 2
-	fc_size5 = embed_dims
-	fc_size6 = output_classes
-	print(str(fc_size1) +  ' ' + str(fc_size2) + ' ' + str(fc_size3) + ' ' + str(fc_size4) + ' ' + str(fc_size5) + ' ' + str(fc_size6))
+	fc_size2 = embed_dims * 16
+	fc_size3 = embed_dims * 8
+	fc_size4 = embed_dims * 4
+	fc_size5 = embed_dims * 4
+	fc_size6 = embed_dims * 4
+	fc_size7 = embed_dims * 2
+	fc_size8 = embed_dims
+	fc_size9 = embed_dims
+	fc_size10 = output_classes
+	print(str(fc_size1) +  ' ' + str(fc_size2) + ' ' + str(fc_size3) + ' ' + str(fc_size4) + ' ' + str(fc_size5) + ' ' + str(fc_size6) + ' ' + str(fc_size7) + ' ' + str(fc_size8))
 
 	X, Y = getData(dataset_path)
 	#print(Y)
